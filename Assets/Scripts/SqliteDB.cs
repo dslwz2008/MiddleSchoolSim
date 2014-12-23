@@ -18,6 +18,18 @@ public class SqliteDB {
 		dbcon = (IDbConnection)new SqliteConnection(connection);
 		dbcon.Open();
 	}
+
+	public ArrayList GetTableNames(){
+		string query = "select name from sqlite_master where type='table' order by name";
+		dbcmd = dbcon.CreateCommand();
+		dbcmd.CommandText = query;
+		reader = dbcmd.ExecuteReader();
+		ArrayList readArray = new ArrayList();
+		while(reader.Read()){
+			readArray.Add(reader.GetValue(0)); 
+		}
+		return readArray;
+	}
 	
 	public ArrayList ReadLimitLines(string tableName, int startLine, int lineNumbers){
 		string query = "SELECT * FROM " + tableName + " LIMIT " + startLine + "," + lineNumbers;
@@ -65,7 +77,7 @@ public class SqliteDB {
 		reader = dbcmd.ExecuteReader();
 		ArrayList readArray = new ArrayList();
 		while(reader.Read()){
-			var lineArray = new ArrayList();
+			ArrayList lineArray = new ArrayList();
 			for (int i = 0; i < reader.FieldCount; i++){
 				lineArray.Add(reader.GetValue(i)); // This reads the entries in a row
 			}
@@ -94,47 +106,14 @@ public class SqliteDB {
 		reader = dbcmd.ExecuteReader(); // execute command which returns a reader
 	}
 
-	public void InsertIntoSingle(string tableName, 
-		string colName, string value){ // single insert
-		string query = "INSERT INTO " + tableName + "(" + colName + ") " + "VALUES (" + value + ")";
-		dbcmd = dbcon.CreateCommand(); // create empty command
-		dbcmd.CommandText = query; // fill the command
-		reader = dbcmd.ExecuteReader(); // execute command which returns a reader
-	}
-
-	public void InsertIntoSpecific(string tableName, 
-		ArrayList col, ArrayList values){ // Specific insert with col and values
-		string query;
-		query = "INSERT INTO " + tableName + "(" + col[0];
-		for(int i = 1; i < col.Count; i++){
-			query += ", " + col[i];
-		}
-		query += ") VALUES (" + values[0];
-		for(int i = 1; i< values.Count; i++){
-			query += ", " + values[i];
-		}
-		query += ")";
+	public void InsertGPSPosition(string tableName, ArrayList values){
+		string query = string.Format("INSERT INTO {0} VALUES ( {1}, {2}, {3}, {4}, '{5}')", 
+		                             tableName, values[0], values[1], values[2], values[3], values[4]);
 		dbcmd = dbcon.CreateCommand();
 		dbcmd.CommandText = query;
 		reader = dbcmd.ExecuteReader();
 	}
 
-	public void InsertInto(string tableName, ArrayList values){ // basic Insert with just values
-		string query = "INSERT INTO " + tableName + " VALUES (" + values[0];
-		for(int i = 1; i<values.Count; i++){
-			query += ", " + values[i];
-		}
-		query += ")";
-		dbcmd = dbcon.CreateCommand();
-		dbcmd.CommandText = query;
-		reader = dbcmd.ExecuteReader();
-	}
-	
-	// This function reads a single column
-	//  wCol is the WHERE column, wPar is the operator you want to use to compare with,
-	//  and wValue is the value you want to compare against.
-	//  Ex. - SingleSelectWhere("puppies", "breed", "earType", "=", "floppy")
-	//  returns an array of matches from the command: SELECT breed FROM puppies WHERE earType = floppy;
 	public ArrayList SingleSelectWhere(string tableName, string itemToSelect,
 		string wCol, string wPar, string wValue){ // Selects a single Item
 		string query = "SELECT " + itemToSelect + " FROM " + tableName + " WHERE " + wCol + wPar + wValue;

@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 public class Utilities : MonoBehaviour {
 	
@@ -26,9 +27,21 @@ public class Utilities : MonoBehaviour {
     }
 
 	public static string GetValidTableName(string raw){
+		//数据库表名中不能含有数字
+		string alphabeta = "abcdefghij";//0123456789
 		string filename = Path.GetFileNameWithoutExtension(raw);
-		filename = filename.Replace(' ', '-').Replace('.', '-');
-		return filename;
+		StringBuilder result = new StringBuilder(filename);
+		//去掉特殊字符
+		for(int i=0; i < filename.Length; i++){
+			if(char.IsNumber(filename[i])){
+				result[i] = alphabeta[int.Parse(filename[i].ToString())];
+			}else if(char.IsLetter(filename[i])){
+				result[i] = filename[i];
+			}else{
+				result[i] = 'z';
+			}
+		}
+		return result.ToString();
 	}
 
 }

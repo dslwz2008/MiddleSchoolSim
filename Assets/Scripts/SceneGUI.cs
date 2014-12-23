@@ -28,10 +28,10 @@ public class SceneGUI : MonoBehaviour {
 			//控制路径回放的功能
 			GUILayout.BeginHorizontal();
 			if(GUILayout.Button(texturePlay, GUILayout.Width(48), GUILayout.Height(48))){
-
+				this.gameObject.SendMessage("StartMovingAlongPath");
 			}
 			if(GUILayout.Button(textureStop, GUILayout.Width(48), GUILayout.Height(48))){
-
+				this.gameObject.SendMessage("StopMoving");
 			}
 			GUILayout.EndHorizontal();
 
@@ -42,7 +42,7 @@ public class SceneGUI : MonoBehaviour {
 				OpenFileDialog dlgOpenGPS = new OpenFileDialog();
 				dlgOpenGPS.InitialDirectory = "URI=file:" + UnityEngine.Application.dataPath;
 				dlgOpenGPS.Filter = "csv files (*.csv)|*.csv";
-				dlgOpenGPS.RestoreDirectory = true ;				
+				//dlgOpenGPS.RestoreDirectory = true ;				
 				if (dlgOpenGPS.ShowDialog() == DialogResult.OK)
 				{
 					//打开文件，写到数据库
@@ -64,13 +64,22 @@ public class SceneGUI : MonoBehaviour {
 							types.Add("FLOAT");
 							types.Add("FLOAT");
 							types.Add("FLOAT");
-							types.Add("DATETIME");
+							types.Add("TEXT");
 							db.CreateTable(tableName, cols, types);
-							string line;
+							string line = sr.ReadLine(); // head line
+							ArrayList values;
+							int index = 1;
 							while ((line = sr.ReadLine()) != null) 
 							{
 								string[] items = line.Split(new char[]{','});
-								Debug.Log(items);
+								values = new ArrayList();
+								values.Add(index);
+								values.Add(float.Parse(items[0]));
+								values.Add(float.Parse(items[1]));
+								values.Add(float.Parse(items[2]));
+								values.Add(DateTime.Parse(items[3]).ToString());
+								db.InsertGPSPosition(tableName, values);
+								++index;
 							}
 							db.CloseDB();
 						}
@@ -79,6 +88,7 @@ public class SceneGUI : MonoBehaviour {
 					{
 						Debug.Log(e.Message);
 					}
+					this.gameObject.SendMessage("ReInitialize");
 				}
 			}
 			if(GUILayout.Button(textureImportRFID, GUILayout.Width(48), GUILayout.Height(48))){
