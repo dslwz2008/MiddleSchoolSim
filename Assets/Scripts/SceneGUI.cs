@@ -91,8 +91,11 @@ public class SceneGUI : MonoBehaviour {
 					this.gameObject.SendMessage("ReInitialize");
 				}
 			}
-			if(GUILayout.Button(textureImportRFID, GUILayout.Width(48), GUILayout.Height(48))){
+			//if(GUILayout.Button(textureImportRFID, GUILayout.Width(48), GUILayout.Height(48))){
 				
+			//}
+			if(GUILayout.Button("退出", GUILayout.Width(48), GUILayout.Height(48))){
+				UnityEngine.Application.Quit();
 			}
 			GUILayout.EndHorizontal();
 		}
