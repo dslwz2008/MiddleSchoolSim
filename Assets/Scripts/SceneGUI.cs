@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Windows.Forms;
 using System.IO;
@@ -10,7 +10,6 @@ public class SceneGUI : MonoBehaviour {
 	public Texture2D texturePlay;
 	public Texture2D textureStop;
 	public Texture2D textureImportGPS;
-	public Texture2D textureImportRFID;
 
 	// Use this for initialization
 	void Start () {
@@ -25,7 +24,6 @@ public class SceneGUI : MonoBehaviour {
 	void OnGUI(){
 		GUILayout.BeginVertical("box");
 		{
-			//控制路径回放的功能
 			GUILayout.BeginHorizontal();
 			if(GUILayout.Button(texturePlay, GUILayout.Width(48), GUILayout.Height(48))){
 				this.gameObject.SendMessage("StartMovingAlongPath");
@@ -35,7 +33,6 @@ public class SceneGUI : MonoBehaviour {
 			}
 			GUILayout.EndHorizontal();
 
-			//导入数据文件功能
 			GUILayout.BeginHorizontal();			
 			if(GUILayout.Button(textureImportGPS, GUILayout.Width(48), GUILayout.Height(48))){
 				//Camera.main.nearClipPlane = 1.0f;
@@ -51,7 +48,7 @@ public class SceneGUI : MonoBehaviour {
 						using (StreamReader sr = new StreamReader(dlgOpenGPS.FileName)) 
 						{
 							SqliteDB db = new SqliteDB();
-							db.OpenDB("data.db");
+							db.OpenDB("gps.db");
 							string tableName = Utilities.GetValidTableName(dlgOpenGPS.FileName);
 							ArrayList cols = new ArrayList();
 							cols.Add("id");
@@ -78,7 +75,7 @@ public class SceneGUI : MonoBehaviour {
 								values.Add(float.Parse(items[1]));
 								values.Add(float.Parse(items[2]));
 								values.Add(DateTime.Parse(items[3]).ToString());
-								db.InsertGPSPosition(tableName, values);
+								db.InsertPoint(tableName, values);
 								++index;
 							}
 							db.CloseDB();
@@ -91,10 +88,8 @@ public class SceneGUI : MonoBehaviour {
 					this.gameObject.SendMessage("ReInitialize");
 				}
 			}
-			//if(GUILayout.Button(textureImportRFID, GUILayout.Width(48), GUILayout.Height(48))){
-				
-			//}
-			if(GUILayout.Button("退出", GUILayout.Width(48), GUILayout.Height(48))){
+			if (GUILayout.Button("Quit", GUILayout.Width(48), GUILayout.Height(48)))
+			{
 				UnityEngine.Application.Quit();
 			}
 			GUILayout.EndHorizontal();

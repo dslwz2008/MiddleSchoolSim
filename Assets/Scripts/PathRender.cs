@@ -47,7 +47,7 @@ public class PathRender : MonoBehaviour {
 	// 各张表的数据读进内存
 	void Initialize(){
 		SqliteDB db = new SqliteDB();
-		db.OpenDB("data.db");
+		db.OpenDB("gps.db");
 		ArrayList tableNames = db.GetTableNames();
 		for(int i = 0; i < tableNames.Count; i++){
 			//Debug.Log(tableNames[i]);

@@ -106,7 +106,7 @@ public class SqliteDB {
 		reader = dbcmd.ExecuteReader(); // execute command which returns a reader
 	}
 
-	public void InsertGPSPosition(string tableName, ArrayList values){
+	public void InsertPoint(string tableName, ArrayList values){
 		string query = string.Format("INSERT INTO {0} VALUES ( {1}, {2}, {3}, {4}, '{5}')", 
 		                             tableName, values[0], values[1], values[2], values[3], values[4]);
 		dbcmd = dbcon.CreateCommand();
